@@ -37,6 +37,24 @@ This project was built to answer these specific business questions:
 4. Do different cohorts behave differently over time?
  
 ---
+
+## Key Insights
+
+**98–99% of customers do not return after their first purchase.**
+
+**Sharp Drop After First Purchase**  
+Retention drops from 100% to below 0.5% immediately after Month 1. For example, the 2017-02 cohort falls from 1,628 customers to just 3 in Month 1 (0.18% retention).
+
+**Extremely Low Retention Rates**  
+For most cohorts, retention stays below 1–2% after the first month, showing that repeat purchase behaviour is almost negligible.
+
+**Presence of Long-Term Customers**  
+A small group of customers continues purchasing even after 10–20 months, forming a long-tail pattern. These customers represent the highest lifetime value segment.
+
+**Consistent Behaviour Across Cohorts**  
+Retention patterns remain nearly identical across cohorts, even when cohort sizes vary significantly. Increasing acquisition volume does not improve retention.
+
+---
  
 ## Dataset
  
@@ -111,22 +129,6 @@ For each cohort and month, unique returning customers were counted and retention
  
 ---
  
-## Key Insights
- 
-**Sharp Drop After First Purchase**
-Across all cohorts, there is a significant drop from Month 0 to Month 1, indicating that most customers do not return after their first purchase. The 2017-02 cohort drops from 1,628 customers to just 3 by Month 1 — a retention rate of 0.18%.
- 
-**Very Low Retention Rates**
-Retention consistently falls below 1–2% after the first month for most cohorts, showing extremely weak repeat purchase behaviour across the entire dataset.
- 
-**Presence of Long-Term Customers**
-A small but consistent group of customers continues purchasing even after 10–20 months, indicating a long-tail retention pattern. These high-value repeat buyers represent the strongest revenue opportunity.
- 
-**Consistent Behaviour Across Cohorts**
-Despite variations in cohort size (some months have 2x more new customers than others), retention patterns remain similar, suggesting that customer acquisition volume alone does not improve retention.
- 
----
- 
 ## Business Recommendations
  
 | # | Recommendation | Details |
@@ -151,10 +153,12 @@ Despite variations in cohort size (some months have 2x more new customers than o
 ---
  
 ## Conclusion
- 
-This project analyzed customer retention using cohort analysis on real e-commerce data. The results show a **sharp drop after the first purchase**, with very low repeat behaviour across all cohorts.
- 
-> **This highlights a key business issue:** improving customer retention is more critical than increasing acquisition volume.
+
+This analysis shows that the business is mostly driven by one-time customers, with more than 98–99% of users not coming back after their first purchase.
+
+The drop happens immediately after Month 0, and retention stays below 1–2% for most cohorts, which means repeat buying is almost non-existent.
+
+> **The biggest takeaway is simple:** improving first-month retention will matter far more than bringing in more new customers.
  
 ---
  
