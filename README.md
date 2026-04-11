@@ -98,7 +98,7 @@ For each cohort and month, unique returning customers were counted and retention
 ## Final Output (Cohort Table)
  
 <p align="center">
-  <img src="cohort_table.png" alt="Cohort Retention Table" width="700"/>
+  <img src="cohort_retention_matrix.png" alt="Cohort Retention Table" width="700"/>
 </p>
  
 ### How to Read the Table
