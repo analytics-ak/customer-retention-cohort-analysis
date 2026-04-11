@@ -142,10 +142,10 @@ Despite variations in cohort size (some months have 2x more new customers than o
  
 ```
 /project-root
-├── Data_setup.sql                          # Database creation, schema, data import, validation
-├── validation.sql                          # Data integrity and consistency checks
-├── Customer_Retention_Cohort_Analysis.sql  # Main analysis: cohort, retention, churn
-└── README.md                              # Project documentation
+├── 01_data_setup.sql                         # Database creation, schema, data import, validation
+├── 02_customer_retention_cohort_Analysis.sql # Main analysis: cohort, retention, churn
+├── 03_validation.sql                         # Data integrity and consistency checks
+└── README.md                                 # Project documentation
 ```
  
 ---
