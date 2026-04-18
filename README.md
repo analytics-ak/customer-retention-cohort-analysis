@@ -1,176 +1,182 @@
 <h1 align="center">Customer Retention Cohort Analysis</h1>
- 
+
 <p align="center">
-  <b>SQL Project | Olist Brazilian E-Commerce Dataset</b><br>
-  <sub>Pure SQL cohort retention analysis using MySQL, CTEs, recursive CTEs, retention rates, and churn analysis.</sub>
+  <b>Pure SQL | Olist Brazilian E-Commerce Dataset</b><br>
+  <sub>Cohort retention analysis using MySQL, CTEs, recursive CTEs, and churn calculations</sub>
 </p>
- 
+
 <p align="center">
   <img src="https://img.shields.io/badge/MySQL-8.0-blue?logo=mysql&logoColor=white" />
   <img src="https://img.shields.io/badge/Status-Completed-success" />
   <img src="https://img.shields.io/badge/Type-SQL%20Only-orange" />
 </p>
- 
----
- 
-## Problem Statement
- 
-In e-commerce, acquiring new customers is expensive. The real value comes when customers return and make repeat purchases.
- 
-This project analyzes customer behaviour using the **Olist dataset** to understand:
- 
-- How many customers return after their first purchase
-- How long they stay active
-- When most customers stop buying
- 
-Before analyzing retention, we also validate that only **delivered orders** are considered, to ensure accurate results.
- 
----
- 
-## Key Questions
- 
-This project was built to answer these specific business questions:
- 
-1. Do customers come back after their first purchase?
-2. How many months do customers stay active?
-3. When does the biggest drop-off happen?
-4. Do different cohorts behave differently over time?
- 
----
-
-## Key Insights
-
-**98–99% of customers do not return after their first purchase.**
-
-**Sharp Drop After First Purchase**  
-Retention drops from 100% to below 0.5% immediately after Month 1. For example, the 2017-02 cohort falls from 1,628 customers to just 3 in Month 1 (0.18% retention).
-
-**Extremely Low Retention Rates**  
-For most cohorts, retention stays below 1–2% after the first month, showing that repeat purchase behaviour is almost negligible.
-
-**Presence of Long-Term Customers**  
-A small group of customers continues purchasing even after 10–20 months, forming a long-tail pattern. These customers represent the highest lifetime value segment.
-
-**Consistent Behaviour Across Cohorts**  
-Retention patterns remain nearly identical across cohorts, even when cohort sizes vary significantly. Increasing acquisition volume does not improve retention.
 
 ---
- 
-## Dataset
- 
-**Source:** Olist Brazilian E-Commerce Dataset (Kaggle)
-🔗 [View Dataset on Kaggle](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
- 
-**Tables Used:**
- 
-| Table | Purpose |
-|-------|---------|
-| `customers` | Contains unique customer identifiers used to track repeat purchases |
-| `orders` | Contains order timestamps and delivery status |
-| `order_items` | Contains item price and freight (shipping cost) for each order |
- 
-**What the Data Represents:**
- 
-This dataset contains real e-commerce transactions over ~2 years (Sep 2016 – Oct 2018). It captures customer purchases, order timelines, and delivery outcomes — allowing us to track when a customer made their first purchase, how frequently they returned, and how long they remained active.
- 
+
+## The Short Version
+
+98–99% of customers on this platform never come back after their first purchase.
+
+That means for every 1,000 customers acquired, roughly 980 buy once and disappear. The business is spending money to acquire customers it cannot retain — and the data shows this pattern is consistent across every single cohort, every month, for two years.
+
+This is not a traffic problem. It is a retention problem — and fixing it matters far more than acquiring more new customers.
+
 ---
- 
-## Approach
- 
-**Step 1 — Data Filtering**
-Only delivered orders were used to ensure valid customer transactions. Cancelled and unsuccessful orders were excluded.
- 
-**Step 2 — Cohort Creation**
-For each customer, the first purchase date was identified. Customers were grouped into cohorts based on their **first purchase month**.
- 
-**Step 3 — Activity Tracking**
-All customer purchases were mapped to monthly buckets. The time difference between the first purchase and subsequent purchases was calculated as `month_number` (Month 0, Month 1, etc.).
- 
-**Step 4 — Retention Calculation**
-For each cohort and month, unique returning customers were counted and retention rate was calculated as a percentage of the original cohort.
- 
+
+## The Core Business Problem
+
+The 2017-02 cohort had 1,628 customers at Month 0. By Month 1, only 3 came back. That is 0.18% retention.
+
+This pattern repeats across every cohort in the dataset. Cohort size does not matter — small cohorts and large cohorts both show the same near-zero retention after Month 1. This means increasing acquisition spend will not fix the revenue problem. It just brings in more one-time buyers.
+
+Using a conservative average order value of $100 — if even 2% of the 98% who never return could be converted into repeat buyers, that represents approximately **$3,200 in additional revenue per 1,000 customers acquired**. At the scale of this platform, that number is significant.
+
+The data is clear: the highest ROI action available to this business is improving Month 1 retention — not growing the top of the funnel.
+
 ---
- 
-## Key Metrics
- 
-| Metric | Description |
-|--------|-------------|
-| **Cohort Size** | Number of customers who made their first purchase in a given month |
-| **Customer Count** | Number of customers from a cohort who returned in a specific month |
-| **Retention Rate** | Percentage of customers retained from the original cohort (`customer_count ÷ cohort_size`) |
-| **Churn Rate** | Percentage of customers who did not return (`100 − retention_rate`) |
- 
+
+## What the Numbers Show
+
+**Overall retention pattern across all cohorts:**
+
+| Month | Typical Retention Rate | What It Means |
+|---|---|---|
+| Month 0 | 100% | First purchase — baseline |
+| Month 1 | 0.18% – 0.5% | Immediate collapse — nearly everyone is gone |
+| Month 2–6 | Below 1% | Stays flat at near-zero |
+| Month 7–20 | Trace levels | Small group of long-term buyers remains |
+
+**Example — 2017-01 cohort:**
+- 717 customers made their first purchase
+- By Month 1: only 2 returned (0.28% retention)
+- By Month 6: trace activity only
+
+**Example — 2017-02 cohort:**
+- 1,628 customers at Month 0
+- By Month 1: 3 returned (0.18% retention)
+
 ---
- 
-## SQL Techniques Used
- 
-> **Tech Stack:** `MySQL 8.0` · `CTEs` · `Recursive CTEs` · `TIMESTAMPDIFF` · `CROSS JOIN` · `COALESCE`
- 
-- **Common Table Expressions (CTEs)** — Used to break the logic into modular steps, improving readability and maintainability
-- **Time Difference Calculation** — Used `TIMESTAMPDIFF(MONTH, cohort_month, order_month)` to calculate the customer lifecycle in months
-- **Dynamic Month Generation** — Used a recursive CTE to generate month numbers dynamically, ensuring the analysis adapts to future data
-- **Aggregation & Deduplication** — Used `COUNT(DISTINCT customer_unique_id)` to accurately measure returning customers
- 
+
+## Four Key Findings
+
+**Finding 1 — The drop happens immediately**
+
+Retention does not decline gradually. It collapses right after Month 0. There is no slow fade — customers buy once and stop. This points to a problem in the post-purchase experience, not product quality or pricing.
+
+**Finding 2 — Retention stays below 1–2% permanently**
+
+After the Month 1 collapse, retention never recovers. It stays below 1–2% for every cohort across the entire two-year period. This is not seasonal. It is structural.
+
+**Finding 3 — Cohort size makes no difference**
+
+Large cohorts and small cohorts show identical retention patterns. Months where the platform acquired more customers did not produce better retention. More acquisition without better retention just means more one-time buyers at higher cost.
+
+**Finding 4 — A small group of loyal buyers exists**
+
+A small number of customers continue purchasing for 10–20 months. These long-tail customers represent the highest lifetime value segment in the entire dataset. They are rare — but they exist, which means repeat purchasing is possible for this business.
+
 ---
- 
-## Final Output (Cohort Table)
- 
+
+## Cohort Retention Matrix
+
 <p align="center">
   <img src="cohort_retention_matrix.png" alt="Cohort Retention Table" width="700"/>
 </p>
- 
-### How to Read the Table
- 
-- **Rows** represent `cohort_month` (first purchase month)
-- **Columns** represent `month_number` (time since first purchase: Month 0 = first purchase, Month 1 = next month, and so on)
-- **Values** show how many customers from that cohort returned in that month
- 
-**Example:** The `2017-01-01` cohort had **717 customers** at Month 0. By Month 1, only **2 customers** returned — a retention rate of just **0.28%**.
- 
+
+**How to read this table:**
+- Rows = cohort month (when the customer made their first purchase)
+- Columns = months since first purchase (Month 0 = first purchase, Month 1 = one month later, etc.)
+- Values = number of customers from that cohort who returned in that month
+
+The near-empty columns after Month 0 tell the entire story.
+
 ---
- 
-## Business Recommendations
- 
-| # | Recommendation | Details |
-|---|---------------|---------|
-| 1 | **Improve Month 1 Retention** | The largest drop occurs immediately after the first purchase. Introduce targeted follow-ups such as discount offers or reminder campaigns within 20–30 days of the first order. |
-| 2 | **Build Loyalty Programs** | Identify long-term customers and offer incentives such as loyalty rewards or exclusive benefits to increase lifetime value. |
-| 3 | **Analyze Delivery Experience** | Further analysis should be done on delivery timelines and customer experience to identify potential reasons for churn. |
-| 4 | **Shift Focus to Retention** | High acquisition with low retention indicates inefficient marketing spend. Allocate more effort toward repeat purchase behaviour rather than only acquiring new customers. |
- 
+
+## What Should Be Done
+
+The problem is specific and the fixes should be too.
+
+| Problem | Action | Expected Impact |
+|---|---|---|
+| 98% of customers never return after Month 0 | Launch a post-purchase email sequence within 7 days of first order — discount, reminder, or personalised recommendation | Even a 1% improvement in Month 1 retention = ~10 additional repeat buyers per 1,000 customers acquired |
+| No incentive structure for repeat buying | Build a simple loyalty program — points, cashback, or next-order discount for customers who buy within 30 days | Targets the window where customers are most likely to return — immediately after first purchase |
+| Long-term buyers are not identified or rewarded | Segment the long-tail buyers (10+ months active) and treat them as a separate high-value group | This group already demonstrates repeat behaviour — nurturing them costs less than acquiring new customers |
+| Acquisition spend is not matched by retention | Shift budget allocation — reduce paid acquisition spend and redirect toward retention campaigns | High acquisition with near-zero retention is the most expensive growth strategy possible |
+
+**Priority: Fix Month 1 first. Everything else is secondary.**
+
+If the business improves Month 1 retention from 0.3% to even 2–3%, the compounding effect across all cohorts produces significantly more revenue than the same budget spent on new customer acquisition.
+
 ---
- 
+
+## How This Was Built
+
+**Step 1 — Data filtering**
+Only delivered orders were included. Cancelled and incomplete orders were excluded to ensure only valid transactions were analysed.
+
+**Step 2 — Cohort creation**
+Each customer's first purchase month was identified. Customers were grouped into cohorts by that month.
+
+**Step 3 — Activity tracking**
+All purchases were mapped to monthly buckets. The time between a customer's first purchase and each subsequent purchase was calculated as a month number (Month 0, Month 1, Month 2, etc.).
+
+**Step 4 — Retention calculation**
+For each cohort and month, the number of returning customers was counted and expressed as a percentage of the original cohort size.
+
+---
+
+## SQL Techniques Used
+
+| Technique | Why It Was Used |
+|---|---|
+| **CTEs** | Broke the logic into clean, readable steps instead of nested subqueries |
+| **Recursive CTEs** | Generated month numbers dynamically — the analysis adapts automatically if the date range changes |
+| **TIMESTAMPDIFF** | Calculated the exact month difference between first purchase and each subsequent order |
+| **CROSS JOIN** | Ensured every cohort-month combination appears in output, including months with zero returning customers |
+| **COUNT(DISTINCT)** | Avoided double-counting customers who placed multiple orders in the same month |
+
+---
+
+## Dataset
+
+- **Source:** [Olist Brazilian E-Commerce Dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) (Kaggle)
+- **Period:** September 2016 – October 2018
+- **Tables used:** `customers`, `orders`, `order_items`
+
+| Table | Purpose |
+|---|---|
+| `customers` | Unique customer identifiers for tracking repeat purchases |
+| `orders` | Order timestamps and delivery status |
+| `order_items` | Item price and shipping cost per order |
+
+---
+
 ## Project Structure
- 
+
 ```
 /project-root
-├── 01_data_setup.sql                         # Database creation, schema, data import, validation
-├── 02_customer_retention_cohort_Analysis.sql # Main analysis: cohort, retention, churn
-├── 03_validation.sql                         # Data integrity and consistency checks
-└── README.md                                 # Project documentation
+├── 01_data_setup.sql                          ← Database creation, schema, data import
+├── 02_customer_retention_cohort_analysis.sql  ← Main analysis: cohort, retention, churn
+├── 03_validation.sql                          ← Data integrity checks
+└── README.md                                  ← You are reading this
 ```
- 
+
 ---
- 
+
 ## Conclusion
 
-This analysis shows that the business is mostly driven by one-time customers, with more than 98–99% of users not coming back after their first purchase.
+This platform is operating as a one-time purchase business while being priced and structured as an e-commerce business.
 
-The drop happens immediately after Month 0, and retention stays below 1–2% for most cohorts, which means repeat buying is almost non-existent.
+98–99% of customers leave after their first order. The pattern is consistent across every cohort for two years. Cohort size does not change it. Season does not change it. It is structural.
 
-> **The biggest takeaway is simple:** improving first-month retention will matter far more than bringing in more new customers.
- 
+The only path to sustainable revenue growth here is retention — specifically, converting more first-time buyers into second-time buyers within the first 30 days. That single improvement, even at a small scale, has a higher return than any amount of additional acquisition spend.
+
+This analysis shows that the problem is not how many customers are coming in. It is how few are staying.
+
 ---
- 
+
 ## Author
- 
+
 **Ashish Kumar Dongre**
-Data Analyst | Python, SQL, Pandas, Seaborn, Matplotlib
- 
-🔗 **LinkedIn:** [View My Profile](https://www.linkedin.com/in/analytics-ashish/)
 
-📂 **Dataset:** [Olist Brazilian E-Commerce on Kaggle](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
-
-💻 **GitHub:** [analytics-ak](https://github.com/analytics-ak)
-
-📘 **SQL Files:** `Customer_Retention_Cohort_Analysis.sql` · `Data_setup.sql` · `validation.sql`
+🔗 [LinkedIn](https://www.linkedin.com/in/analytics-ashish/) &nbsp;|&nbsp; 💻 [GitHub](https://github.com/analytics-ak) &nbsp;|&nbsp; 📂 [Dataset on Kaggle](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
